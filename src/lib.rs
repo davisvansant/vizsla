@@ -1,3 +1,8 @@
+use flate2::write::GzEncoder;
+use flate2::Compression;
+use std::fs::File;
+use tar::Builder;
+
 pub struct Archive {}
 
 impl Archive {
@@ -6,6 +11,9 @@ impl Archive {
     }
 
     pub fn create(self) -> Result<(), std::io::Error> {
+        let tar_gz = File::create("some_name.tar.gz")?;
+        let format = GzEncoder::new(tar_gz, Compression::default());
+        let mut tar = Builder::new(format);
         Ok(())
     }
 
