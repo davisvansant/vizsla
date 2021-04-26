@@ -11,14 +11,14 @@ impl Archiver {
         Archiver {}
     }
 
-    pub fn create(self) -> Result<(), std::io::Error> {
+    pub fn create(&self) -> Result<(), std::io::Error> {
         let tar_gz = File::create("some_name.tar.gz")?;
         let format = GzEncoder::new(tar_gz, Compression::default());
         let mut tar = Builder::new(format);
         Ok(())
     }
 
-    pub fn extract(self) -> Result<(), std::io::Error> {
+    pub fn extract(&self) -> Result<(), std::io::Error> {
         let tar_gz = File::open("some_name.tar.gz")?;
         let gzip = GzEncoder::new(tar_gz, Compression::default());
         let mut tar = Archive::new(gzip);
@@ -44,6 +44,7 @@ mod tests {
     #[test]
     fn extract() {
         let test_archive = Archiver::init();
+        test_archive.create().unwrap();
         test_archive.extract().unwrap();
     }
 }
