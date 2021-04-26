@@ -15,6 +15,7 @@ impl Archiver {
         let tar_gz = File::create("some_name.tar.gz")?;
         let format = GzEncoder::new(tar_gz, Compression::default());
         let mut tar = Builder::new(format);
+        tar.finish()?;
         Ok(())
     }
 
@@ -39,6 +40,7 @@ mod tests {
     fn create() {
         let test_archive = Archiver::init();
         test_archive.create().unwrap();
+        std::fs::remove_file("some_name.tar.gz").unwrap();
     }
 
     #[test]
@@ -46,5 +48,6 @@ mod tests {
         let test_archive = Archiver::init();
         test_archive.create().unwrap();
         test_archive.extract().unwrap();
+        std::fs::remove_file("some_name.tar.gz").unwrap();
     }
 }
