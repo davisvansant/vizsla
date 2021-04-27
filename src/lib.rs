@@ -55,6 +55,9 @@ mod tests {
         let test_archive = Archiver::init();
         test_archive.create().unwrap();
         test_archive.extract().unwrap();
+        let test_file = std::fs::File::open("./some_name/os-release").unwrap();
+        let test_file_metadata = test_file.metadata().unwrap();
+        assert_eq!(test_file_metadata.is_file(), true);
         std::fs::remove_file("some_name.tar.gz").unwrap();
         std::fs::remove_file("./some_name/os-release").unwrap();
         std::fs::remove_dir("./some_name/").unwrap();
