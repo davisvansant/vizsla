@@ -7,6 +7,7 @@ use tar::Archive;
 use tar::Builder;
 
 pub struct Archiver {
+    pub name: PathBuf,
     pub file_name: PathBuf,
 }
 
@@ -14,10 +15,13 @@ impl Archiver {
     pub fn init(name: &str) -> Archiver {
         let mut path_buf = PathBuf::with_capacity(20);
         path_buf.push(name);
-        path_buf.set_extension("tar.gz");
+        let mut file_name = PathBuf::with_capacity(20);
+        file_name.push(name);
+        file_name.set_extension("tar.gz");
 
         Archiver {
-            file_name: path_buf,
+            name: path_buf,
+            file_name,
         }
     }
 
@@ -35,7 +39,7 @@ impl Archiver {
         let tar_gz = File::open(self.file_name.as_path())?;
         let gzip = GzDecoder::new(tar_gz);
         let mut tar = Archive::new(gzip);
-        tar.unpack("some_name")?;
+        tar.unpack(self.name.as_path())?;
         Ok(())
     }
 }
@@ -47,6 +51,10 @@ mod tests {
     #[test]
     fn init() {
         let test_archiver = Archiver::init("test_archive");
+        assert_eq!(
+            test_archiver.name.as_path(),
+            std::path::Path::new("test_archive"),
+        );
         assert_eq!(
             test_archiver.file_name.as_path(),
             std::path::Path::new("test_archive.tar.gz"),
@@ -68,11 +76,11 @@ mod tests {
         let test_archive = Archiver::init("test_archive");
         test_archive.create().unwrap();
         test_archive.extract().unwrap();
-        let test_file = std::fs::File::open("./some_name/os-release").unwrap();
+        let test_file = std::fs::File::open("./test_archive/os-release").unwrap();
         let test_file_metadata = test_file.metadata().unwrap();
         assert_eq!(test_file_metadata.is_file(), true);
         std::fs::remove_file("test_archive.tar.gz").unwrap();
-        std::fs::remove_file("./some_name/os-release").unwrap();
-        std::fs::remove_dir("./some_name/").unwrap();
+        std::fs::remove_file("./test_archive/os-release").unwrap();
+        std::fs::remove_dir("./test_archive/").unwrap();
     }
 }
