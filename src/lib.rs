@@ -22,7 +22,7 @@ impl Archiver {
     }
 
     pub fn create(&self) -> Result<(), std::io::Error> {
-        let tar_gz = File::create("some_name.tar.gz")?;
+        let tar_gz = File::create(self.file_name.as_path())?;
         let format = GzEncoder::new(tar_gz, Compression::default());
         let mut tar = Builder::new(format);
         let mut file = File::open("/etc/os-release")?;
@@ -32,7 +32,7 @@ impl Archiver {
     }
 
     pub fn extract(&self) -> Result<(), std::io::Error> {
-        let tar_gz = File::open("some_name.tar.gz")?;
+        let tar_gz = File::open(self.file_name.as_path())?;
         let gzip = GzDecoder::new(tar_gz);
         let mut tar = Archive::new(gzip);
         tar.unpack("some_name")?;
@@ -57,10 +57,10 @@ mod tests {
     fn create() {
         let test_archive = Archiver::init("test_archive");
         test_archive.create().unwrap();
-        let test_file = std::fs::File::open("some_name.tar.gz").unwrap();
+        let test_file = std::fs::File::open("test_archive.tar.gz").unwrap();
         let test_file_metadata = test_file.metadata().unwrap();
         assert_eq!(test_file_metadata.is_file(), true);
-        std::fs::remove_file("some_name.tar.gz").unwrap();
+        std::fs::remove_file("test_archive.tar.gz").unwrap();
     }
 
     #[test]
@@ -71,7 +71,7 @@ mod tests {
         let test_file = std::fs::File::open("./some_name/os-release").unwrap();
         let test_file_metadata = test_file.metadata().unwrap();
         assert_eq!(test_file_metadata.is_file(), true);
-        std::fs::remove_file("some_name.tar.gz").unwrap();
+        std::fs::remove_file("test_archive.tar.gz").unwrap();
         std::fs::remove_file("./some_name/os-release").unwrap();
         std::fs::remove_dir("./some_name/").unwrap();
     }
