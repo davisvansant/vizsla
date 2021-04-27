@@ -65,10 +65,10 @@ mod tests {
     fn create() {
         let test_archive = Archiver::init("test_archive");
         test_archive.create().unwrap();
-        let test_file = std::fs::File::open("test_archive.tar.gz").unwrap();
+        let test_file = std::fs::File::open(test_archive.file_name.as_path()).unwrap();
         let test_file_metadata = test_file.metadata().unwrap();
         assert_eq!(test_file_metadata.is_file(), true);
-        std::fs::remove_file("test_archive.tar.gz").unwrap();
+        std::fs::remove_file(test_archive.file_name.as_path()).unwrap();
     }
 
     #[test]
@@ -79,8 +79,8 @@ mod tests {
         let test_file = std::fs::File::open("./test_archive/os-release").unwrap();
         let test_file_metadata = test_file.metadata().unwrap();
         assert_eq!(test_file_metadata.is_file(), true);
-        std::fs::remove_file("test_archive.tar.gz").unwrap();
+        std::fs::remove_file(test_archive.file_name.as_path()).unwrap();
         std::fs::remove_file("./test_archive/os-release").unwrap();
-        std::fs::remove_dir("./test_archive/").unwrap();
+        std::fs::remove_dir(test_archive.name.as_path()).unwrap();
     }
 }
