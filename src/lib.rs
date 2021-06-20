@@ -67,7 +67,7 @@ mod tests {
         test_archive.create().unwrap();
         let test_file = std::fs::File::open(test_archive.file_name.as_path()).unwrap();
         let test_file_metadata = test_file.metadata().unwrap();
-        assert_eq!(test_file_metadata.is_file(), true);
+        assert!(test_file_metadata.is_file());
         std::fs::remove_file(test_archive.file_name.as_path()).unwrap();
     }
 
@@ -78,7 +78,7 @@ mod tests {
         test_archive.extract().unwrap();
         let test_file = std::fs::File::open("./test_archive/os-release").unwrap();
         let test_file_metadata = test_file.metadata().unwrap();
-        assert_eq!(test_file_metadata.is_file(), true);
+        assert!(test_file_metadata.is_file());
         std::fs::remove_file(test_archive.file_name.as_path()).unwrap();
         std::fs::remove_file("./test_archive/os-release").unwrap();
         std::fs::remove_dir(test_archive.name.as_path()).unwrap();
